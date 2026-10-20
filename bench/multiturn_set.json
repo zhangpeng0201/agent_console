@@ -1,0 +1,138 @@
+[
+  {
+    "name": "D1 候选指代-删除待办",
+    "scenario": "list 出候选后，用序号删",
+    "turns": [
+      {"user": "我有哪些待办",
+       "assistant_decision": {"type": "command", "tool": "list_todos", "args": {}},
+       "assistant_reply": "共3条待办事项:\n第1条，给鱼缸换水\n第2条，明天下午三点开会\n第3条，给车做年检"},
+      {"user": "把第2条删了",
+       "expect": {"type": "command", "tool": "delete_todo", "args": {"lineno": 2}}}
+    ]
+  },
+  {
+    "name": "D2 候选指代-完成待办",
+    "scenario": "list 出候选后，用序号标完成",
+    "turns": [
+      {"user": "看看我的待办",
+       "assistant_decision": {"type": "command", "tool": "list_todos", "args": {}},
+       "assistant_reply": "共2条待办事项:\n第1条，买菜\n第2条，交水电费"},
+      {"user": "第1条做完了",
+       "expect": {"type": "command", "tool": "complete_todo", "args": {"lineno": 1}}}
+    ]
+  },
+  {
+    "name": "D3 候选指代-删除备忘",
+    "scenario": "list 出备忘后，用序号删",
+    "turns": [
+      {"user": "我记了些什么",
+       "assistant_decision": {"type": "command", "tool": "list_memos", "args": {}},
+       "assistant_reply": "共3条备忘录:\n第1条，房门密码是1234\n第2条，牛奶快没了\n第3条，车停在地下车库B2层108号位"},
+      {"user": "把第3条删掉",
+       "expect": {"type": "command", "tool": "delete_memo", "args": {"lineno": 3}}}
+    ]
+  },
+  {
+    "name": "D4 省略式指代-记上一条事实",
+    "scenario": "动作词在本轮，内容在上一轮",
+    "turns": [
+      {"user": "我今天吃了鱼香肉丝",
+       "assistant_decision": {"type": "chat", "tool": null, "args": {}},
+       "assistant_reply": "鱼香肉丝确实不错，改天我也尝尝。"},
+      {"user": "帮我记下来吧",
+       "expect": {"type": "command", "tool": "add_memo"}}
+    ]
+  },
+  {
+    "name": "D5 省略式指代-提醒上一条事情",
+    "scenario": "动作词在本轮，内容在上一轮（待办方向）",
+    "turns": [
+      {"user": "唉，下周三还要去医院复查，真麻烦",
+       "assistant_decision": {"type": "chat", "tool": null, "args": {}},
+       "assistant_reply": "复查确实挺折腾的，记得带上之前的检查报告。"},
+      {"user": "提醒我一下",
+       "expect": {"type": "command", "tool": "add_todo"}}
+    ]
+  },
+  {
+    "name": "D6 话题切换-从备忘切到天气",
+    "scenario": "上一轮刚记了东西，这一轮问天气，历史不该影响判断",
+    "turns": [
+      {"user": "帮我记一下牛奶快没了",
+       "assistant_decision": {"type": "command", "tool": "add_memo", "args": {"text": "牛奶快没了"}},
+       "assistant_reply": "已加入备忘录！\n牛奶快没了"},
+      {"user": "今天天气怎么样",
+       "expect": {"type": "command", "tool": "get_weather"}}
+    ]
+  },
+  {
+    "name": "D7 话题切换-从待办切到时间",
+    "scenario": "上一轮刚记了待办，这一轮问时间",
+    "turns": [
+      {"user": "记一下明天下午三点开会",
+       "assistant_decision": {"type": "command", "tool": "add_todo", "args": {"text": "明天下午三点开会"}},
+       "assistant_reply": "已加入待办事项！\n明天下午三点开会"},
+      {"user": "现在几点了",
+       "expect": {"type": "command", "tool": "get_current_time"}}
+    ]
+  },
+  {
+    "name": "D8 多轮工具链-记完再查",
+    "scenario": "先写入，再查询",
+    "turns": [
+      {"user": "记一下快递取件码是7412",
+       "assistant_decision": {"type": "command", "tool": "add_memo", "args": {"text": "快递取件码是7412"}},
+       "assistant_reply": "已加入备忘录！\n快递取件码是7412"},
+      {"user": "我都记了什么",
+       "expect": {"type": "command", "tool": "list_memos"}}
+    ]
+  },
+  {
+    "name": "D9 离场后指代-中间插一轮闲聊",
+    "scenario": "列过候选 → 用户闲聊一轮 → 又用序号（候选已作废）",
+    "turns": [
+      {"user": "我的待办有哪些",
+       "assistant_decision": {"type": "command", "tool": "list_todos", "args": {}},
+       "assistant_reply": "共2条待办事项:\n第1条，给鱼缸换水\n第2条，交水电费"},
+      {"user": "嗯，先这样吧",
+       "assistant_decision": {"type": "chat", "tool": null, "args": {}},
+       "assistant_reply": "好的，需要的时候再叫我。",
+       "expect": {"type": "chat", "tool": null}},
+      {"user": "把第1条删了",
+       "expect": {"type": "command", "tool": "delete_todo", "args": {"lineno": 1}}}
+    ]
+  },
+  {
+    "name": "D10 搜索-省略式追问",
+    "scenario": "上一轮搜了某事物，这一轮只给新名词",
+    "turns": [
+      {"user": "特斯拉最近怎么样了",
+       "assistant_decision": {"type": "command", "tool": "web_search", "args": {"query": "特斯拉 最新消息"}},
+       "assistant_reply": "1.特斯拉最新动态：近期交付量与股价均有所波动\n2.特斯拉中国市场表现：销量数据已更新\n3.特斯拉新车型进展：量产时间待确认"},
+      {"user": "那比亚迪呢",
+       "expect": {"type": "command", "tool": "web_search"}}
+    ]
+  },
+  {
+    "name": "D11 边界-聊过的内容不该被记下来",
+    "scenario": "上一轮是闲聊，这一轮问清单，不该把闲聊内容混进记忆",
+    "turns": [
+      {"user": "我今天去看了场电影，挺好看的",
+       "assistant_decision": {"type": "chat", "tool": null, "args": {}},
+       "assistant_reply": "看电影放松一下挺好的。"},
+      {"user": "我都记了什么",
+       "expect": {"type": "command", "tool": "list_memos"}}
+    ]
+  },
+  {
+    "name": "D12 多轮同工具-连续记两条",
+    "scenario": "同一个工具在多轮里连着用，历史内容不该被串台",
+    "turns": [
+      {"user": "记一下牛奶快没了",
+       "assistant_decision": {"type": "command", "tool": "add_memo", "args": {"text": "牛奶快没了"}},
+       "assistant_reply": "已加入备忘录！\n牛奶快没了"},
+      {"user": "再记一下鸡蛋也没了",
+       "expect": {"type": "command", "tool": "add_memo"}}
+    ]
+  }
+]

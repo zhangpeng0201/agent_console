@@ -1,0 +1,37 @@
+# ---------- 密钥 ----------
+.env
+.env.local
+.env.*.local
+# 留一个模板：键名 + 占位值，方便他人跑通
+!.env.example
+
+# ---------- 大文件 / 模型权重 ----------
+# 语音模型约 118 MB，从官方仓库下载（见 README「快速开始 C」）
+model/
+
+# ---------- 运行时数据 ----------
+# 待办 / 备忘录按 user_id 落在 output/ 下，属于本地数据
+output/
+memos.json
+todos.json
+
+# ---------- 部署副本 ----------
+# deploy/src 是 src/ 的拷贝，不入库；clone 后用
+#   robocopy src deploy/src /MIR /XD __pycache__
+# 同步（README「部署」一节）
+deploy/src/
+
+# ---------- 备份 / 临时文件 ----------
+*.bak
+*.patch
+_backup_*
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+
+# ---------- IDE / 系统 ----------
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

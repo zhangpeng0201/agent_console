@@ -1,0 +1,12 @@
+# 统一行尾：所有文本文件在仓库和工作区都用 LF
+# 目的：不再依赖每个人本地的 core.autocrlf 设置，避免"换个机器就整文件 diff"的假改动
+# 二进制文件由 git 自动识别（text=auto），不受影响
+
+* text=auto eol=lf
+
+# 二进制文件不做文本转换/行尾处理（仓库里目前没有这些，防以后误加）
+*.onnx  binary
+*.wav   binary
+*.mp3   binary
+*.png   binary
+*.jpg   binary
